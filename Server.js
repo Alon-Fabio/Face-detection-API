@@ -42,4 +42,4 @@ app.post('/register', (req, res)=>{
 
 app.listen(9000, ()=>{
     console.log("Working on port 9000");
-});git pull igin "https://github.com/Alon-Fabio/face-detection-api.git" --allow-unrelated-historiesor
+});
