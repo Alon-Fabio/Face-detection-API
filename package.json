@@ -1,17 +1,30 @@
 {
   "name": "face-detection-api",
   "version": "1.0.0",
-  "description": "en API for the face detection web appliction",
-  "main": "index.js",
+  "description": "An API for the face detection web appliction",
+  "main": "Server.js",
   "scripts": {
-    "start": "nodemon Server.js"
+    "start": "nodemon ./Server/Server.js"
   },
   "author": "Alon Fabio",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.7",
+    "bcrypt": "^3.0.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "nodemon": "^2.0.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alon-Fabio/Face-detection-API.git"
+  },
+  "keywords": [
+    "'face'",
+    "'detection'"
+  ],
+  "bugs": {
+    "url": "https://github.com/Alon-Fabio/Face-detection-API/issues"
+  },
+  "homepage": "https://github.com/Alon-Fabio/Face-detection-API#readme"
 }
