@@ -33,11 +33,12 @@ app.get('/', (req, res)=>{
 });
 app.post('/signin', (req, res)=>{
     if(req.body.password === database[0].password && req.body.email === database[0].email){
-        res.json('sucsses')
-    }
+        res.json("sucsses")
+    } else {res.status(400).json("err login in")}
 });
 app.post('/register', (req, res)=>{
-    res.send("Get on port 9000")
+    console.log(req.body);
+    res.send(database[0]);
 });
 
 app.listen(9000, ()=>{
