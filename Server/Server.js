@@ -48,22 +48,20 @@ app.post('/register', (req, res)=>{
 });
 
 app.post('/image',(req, res)=>{
-    // const id  = req.body.id;
-    // let found = false;
-    // console.log(req.body + " Image req")
-    // database.users.forEach(user=>{
-    //     if(user.id===id){
-    //         found=true;
-    //         user.enteries++;
-    //         console.log(user.enteries)
-    //         return res.json(user.enteries)
-    //     }
-    // })
-    console.log(req.body + " Image req")
-    res.send(database.users[0]);
-    // if (!found) {
-    //     res.status(400).json('not found');
-    // }
+    const id  = req.body.id;
+    let found = false;
+    console.log(req.body.id + " Image req")
+    database.users.forEach(user=>{
+        if(user.id===id){
+            found=true;
+            user.enteries++;
+            console.log(user.enteries)
+            return res.json(user.enteries)
+        }
+    })
+    if (!found) {
+        res.status(400).json('not found');
+    }
     
 })
 
