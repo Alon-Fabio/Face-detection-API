@@ -1,6 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const knex = require('knex')
+
+const sqlDB = knex({
+    client: 'pg',
+    connection: {
+      host : '127.0.0.1',
+      user : 'postgres',
+      password : 'learning',
+      database : 'facedetectiondb'
+    }
+  });
 
 
 const app = express();
@@ -30,7 +41,9 @@ const database ={
         }
     ]
 }
-
+sqlDB('users').insert({id: '1'},{name: 'test'}, {email: 'test@test.com'});
+const test = sqlDB.select('name', 'id', 'email').from('users');
+console.log(test);
 app.use(cors());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
