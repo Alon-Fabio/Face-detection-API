@@ -41,9 +41,12 @@ const database ={
         }
     ]
 }
-sqlDB('users').insert({id: '1'},{name: 'test'}, {email: 'test@test.com'});
-const test = sqlDB.select('name', 'id', 'email').from('users');
-console.log(test);
+// sqlDB.insert({name: 'alon', email: 'alon@test.com', entries: '2', joined: new Date()}).into('users')
+// .then((data)=>{console.log(data)});
+
+
+
+
 app.use(cors());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -57,7 +60,12 @@ app.post('/signin', (req, res)=>{
 });
 app.post('/register', (req, res)=>{
     console.log(req.body);
-    res.send(database.users[0]);
+    sqlDB.insert({name: req.body.name, email: req.body.email, joined: new Date()}).into('users').returning('*')
+    .then((user)=>res.json(user[0]))
+    .catch(err => res.status(400).json('Ops.. there was an error'));
+
+    sqlDB.insert({hash: req.body.password, email: req.body.email}).into('login')
+    .catch(err => res.status(400).json('Ops.. there was an error'));
 });
 
 app.post('/image',(req, res)=>{
@@ -81,3 +89,8 @@ app.post('/image',(req, res)=>{
 app.listen(9000, ()=>{
     console.log("Working on port 9000");
 });
+
+setTimeout(()=>{
+    sqlDB.select('*').from('users').then((data)=>{console.log(data)});
+    sqlDB.select('*').from('login').then((data)=>{console.log(data)});
+}, [2000]);
