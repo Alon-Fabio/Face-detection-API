@@ -63,13 +63,28 @@ app.get('/profile/:id', (req, res)=>{
     }).catch((err)=>res.status(400).json(err));
 });
 app.post('/signin', (req, res)=>{
-    if(req.body.password === database.users[0].password && req.body.email === database.users[0].email){
-        res.json("sucsses")
-    } else {res.status(400).json("err login in")}
+    console.log("Sing in trigered");
+
+    sqlDB.select('email', 'hash').from('login').where('email', '=', req.body.email)
+    .then((LoginPass)=> {
+        if (bcrypt.compare(req.body.password, LoginPass[0].hash)){
+            sqlDB.select('*').from('users').where('email', '=', req.body.email)
+            .then(user=>res.json(user[0]))
+            .catch((err) => {
+                console.log(err);
+                return res.status(400).json({err:'Unabel to register'})});
+        } else {
+            res.json({err:"Your Email or Password is incorrect"});
+        }})
+        .catch((err) => {
+            console.log('General err trigered');
+            return res.status(400).json({err:'Unabel to register'})});
 });
 
 
 app.post('/register', (req, res)=>{
+
+    console.log("Register in trigered");
 
     let hash = bcrypt.hashSync(req.body.password, 10);
     sqlDB.transaction((trx)=>{
@@ -78,21 +93,17 @@ app.post('/register', (req, res)=>{
         .then((LoginEmail)=>{
             return trx.insert({name: req.body.name, email: LoginEmail[0], joined: new Date()})
             .into('users').returning('*')
-            .then((user)=>res.json(user[0]));
+            .then((user)=>res.json(user[0]))
+            .catch((err) => {
+                console.log('User err trigered');
+                return res.status(400).json('Unabel to register')});
         })
         .then(trx.commit)
-        .then(trx.rollback);
-    }).catch(err => res.status(400).json(err));
-    // sqlDB.insert({hash: hash, email: req.body.email}).into('login')
-    // .returning('email')
-    // .then((LoginEmail)=>{
-    //     sqlDB.insert({name: req.body.name, email: LoginEmail[0], joined: new Date()})
-    //     .into('users').returning('*')
-    //     .then((user)=>res.json(user[0]));
-    // }).catch(err => res.status(400).json(err));
-    
-
-    
+        .then(trx.rollback).catch((err) => {
+            console.log('General err trigered');
+            return res.status(400).json('Unabel to register')});
+        
+    })
 });
 
 app.post('/image',(req, res)=>{
