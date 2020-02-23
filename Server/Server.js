@@ -13,38 +13,9 @@ const sqlDB = knex({
     }
   });
 
+const mysalt = bcrypt.genSaltSync(10);
 
 const app = express();
-
-const database ={ 
-        users:[
-        {
-            id:"55",
-            name:"Alon",
-            email:"alon@alon.com",
-            password:"appels",
-            enteries: 0,
-            juined: new Date()
-        },
-        {
-            id:"80",
-            name:"Katy",
-            email:"Katy@Katy.com",
-            password:"bananes",
-            enteries: 0,
-            juined: new Date()
-        },
-
-    ],secrets:[
-        {
-
-        }
-    ]
-}
-// sqlDB.insert({name: 'alon', email: 'alon@test.com', entries: '2', joined: new Date()}).into('users')
-// .then((data)=>{console.log(data)});
-
-
 
 
 app.use(cors());
@@ -62,23 +33,27 @@ app.get('/profile/:id', (req, res)=>{
         )}
     }).catch((err)=>res.status(400).json(err));
 });
+
+
 app.post('/signin', (req, res)=>{
     console.log("Sing in trigered");
 
     sqlDB.select('email', 'hash').from('login').where('email', '=', req.body.email)
     .then((LoginPass)=> {
-        if (bcrypt.compare(req.body.password, LoginPass[0].hash)){
+        bcrypt.compare(req.body.password, LoginPass[0].hash)
+        .then((passCheck)=>{
+        if (passCheck){
             sqlDB.select('*').from('users').where('email', '=', req.body.email)
-            .then(user=>res.json(user[0]))
+            .then(user=>{console.log(user); res.json(user[0])})
             .catch((err) => {
                 console.log(err);
-                return res.status(400).json({err:'Unabel to register'})});
+                return res.status(400).json({error:'Unabel to register'})});
         } else {
-            res.json({err:"Your Email or Password is incorrect"});
-        }})
+            res.json({error:"No match"});
+        }})})
         .catch((err) => {
             console.log('General err trigered');
-            return res.status(400).json({err:'Unabel to register'})});
+            return res.status(400).json({error:'Unabel to register'})});
 });
 
 
@@ -86,7 +61,7 @@ app.post('/register', (req, res)=>{
 
     console.log("Register in trigered");
 
-    let hash = bcrypt.hashSync(req.body.password, 10);
+    let hash = bcrypt.hashSync(req.body.password, mysalt);
     sqlDB.transaction((trx)=>{
         trx.insert({hash: hash, email: req.body.email}).into('login')
         .returning('email')
