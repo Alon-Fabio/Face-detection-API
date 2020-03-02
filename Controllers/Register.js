@@ -1,15 +1,15 @@
 const HandleRegister = (sqlDB,bcrypt,mysalt)=>(req, res)=>{
     console.log("Register in trigered");
-
-    if (!req.body.email||!req.body.name||!req.body.password){
+    const {email, name, password} = req.body
+    if (!email||!name||!password){
         return res.status(400).json("Bad request");
     }
-    let hash = bcrypt.hashSync(req.body.password, mysalt);
+    let hash = bcrypt.hashSync(password, mysalt);
     sqlDB.transaction((trx)=>{
-        trx.insert({hash: hash, email: req.body.email}).into('login')
+        trx.insert({hash: hash, email: email}).into('login')
         .returning('email')
         .then((LoginEmail)=>{
-            return trx.insert({name: req.body.name, email: LoginEmail[0], joined: new Date()})
+            return trx.insert({name: name, email: LoginEmail[0], joined: new Date()})
             .into('users').returning('*')
             .then((user)=>res.json(user[0]))
             .catch((err) => {
@@ -24,5 +24,5 @@ const HandleRegister = (sqlDB,bcrypt,mysalt)=>(req, res)=>{
     })}
 
     module.exports = {
-        HandleRegister: HandleRegister
+        HandleRegister
     };

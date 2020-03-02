@@ -1,12 +1,18 @@
 const HandleSignIn = (sqlDB,bcrypt) =>(req, res)=>{
     console.log("Sing in trigered");
 
-    sqlDB.select('email', 'hash').from('login').where('email', '=', req.body.email)
+    const {email,password} = req.body;
+
+    if (!email||!password){
+        return res.status(400).json("Bad request");
+    }
+
+    sqlDB.select('email', 'hash').from('login').where('email', '=', email)
     .then((LoginPass)=> {
-        bcrypt.compare(req.body.password, LoginPass[0].hash)
+        bcrypt.compare(password, LoginPass[0].hash)
         .then((passCheck)=>{
         if (passCheck){
-            sqlDB.select('*').from('users').where('email', '=', req.body.email)
+            sqlDB.select('*').from('users').where('email', '=', email)
             .then(user=>{console.log(user); res.json(user[0])})
             .catch((err) => {
                 console.log(err);
@@ -20,5 +26,5 @@ const HandleSignIn = (sqlDB,bcrypt) =>(req, res)=>{
 }
 
 module.exports = {
-    HandleSignIn:HandleSignIn
+    HandleSignIn
 };
