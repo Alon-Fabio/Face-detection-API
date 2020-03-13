@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const knex = require('knex');
-const Clarifai = require('clarifai');
 const Register = require('../Controllers/Register');
 const SignIn = require('../Controllers/SignIn');
 const Image = require('../Controllers/Image');
@@ -10,9 +9,7 @@ const Image = require('../Controllers/Image');
 const HandleRegister = Register.HandleRegister;
 const HandleSignIn = SignIn.HandleSignIn;
 const {HandleImage,HandleClarifaiApi,HandleImageAndApi} = Image;
-const appCl = new Clarifai.App({
-    apiKey: '3634fc260367403ca7e2a34a0b974b91'
-});
+
 const sqlDB = knex({
     client: 'pg',
     connection: {
@@ -49,17 +46,8 @@ app.post('/signin', HandleSignIn(sqlDB,bcrypt));
 
 app.post('/register', HandleRegister(sqlDB,bcrypt,mysalt));
 
-app.put('/image', HandleImage(sqlDB));
-
 app.post('/imageApi', HandleImageAndApi(sqlDB));
-
-app.post('/imageUrl', HandleClarifaiApi);
 
 app.listen(9000, ()=>{
     console.log("Working on port 9000");
 });
-
-// setTimeout(()=>{
-//     sqlDB.select('*').from('users').then((data)=>{console.log(data)});
-//     sqlDB.select('*').from('login').then((data)=>{console.log(data)});
-// }, [2000]);
