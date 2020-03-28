@@ -27,7 +27,5 @@ const HandleImageAndApi = (sqlDB)=>(req,res) => {
 }
 
 module.exports = {
-    HandleImage,
-    HandleClarifaiApi,
     HandleImageAndApi
 };
